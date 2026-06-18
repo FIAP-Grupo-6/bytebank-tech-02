@@ -15,6 +15,8 @@
 const TRANSACTIONS_URL =
   process.env.TRANSACTIONS_URL || 'http://localhost:3001'
 
+console.log('>>> TRANSACTIONS_URL no build:', TRANSACTIONS_URL)
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Necessário para o Dockerfile (copia .next/standalone)
