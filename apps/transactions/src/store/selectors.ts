@@ -9,6 +9,9 @@ const selectFilters = (state: RootState) => state.transactions.filters
 const selectCurrentPage = (state: RootState) => state.transactions.currentPage
 const selectPageSize = (state: RootState) => state.transactions.pageSize
 
+const parseDateStart = (value: string) => new Date(`${value}T00:00:00`)
+const parseDateEnd = (value: string) => new Date(`${value}T23:59:59.999`)
+
 // ─── Seletor memorizado: transações filtradas ────────────────────────────────
 
 export const selectFilteredTransactions = createSelector(
@@ -18,10 +21,12 @@ export const selectFilteredTransactions = createSelector(
       if (filters.type && filters.type !== 'all' && t.type !== filters.type)
         return false
 
-      if (filters.dateFrom && new Date(t.date) < new Date(filters.dateFrom))
+      const transactionDate = new Date(t.date)
+
+      if (filters.dateFrom && transactionDate < parseDateStart(filters.dateFrom))
         return false
 
-      if (filters.dateTo && new Date(t.date) > new Date(filters.dateTo))
+      if (filters.dateTo && transactionDate > parseDateEnd(filters.dateTo))
         return false
 
       if (filters.search) {

@@ -41,6 +41,13 @@ const inputClass =
 const labelClass = 'text-sm font-medium text-foreground/80 block mb-1.5'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
+const CREATE_DEFAULT_VALUES: FormData = {
+  type: 'Credit',
+  value: undefined as unknown as number,
+  from: '',
+  to: '',
+  anexo: '',
+}
 
 function formatBRL(value: number): string {
   return new Intl.NumberFormat('pt-BR', {
@@ -66,6 +73,20 @@ function fileToBase64(file: File): Promise<string> {
 
 function isDataUri(value: string): boolean {
   return value.startsWith('data:')
+}
+
+function normalizeTransactionType(type: unknown): 'Credit' | 'Debit' {
+  const normalized = String(type ?? '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+
+  if (normalized === 'credit' || normalized === 'credito' || normalized === 'entrada') {
+    return 'Credit'
+  }
+
+  return 'Debit'
 }
 
 // ─── CurrencyInput ───────────────────────────────────────────────────────────
@@ -146,12 +167,24 @@ export function TransactionModal({
 
   const selectedType = watch('type')
 
+  const resetCreateState = () => {
+    reset(CREATE_DEFAULT_VALUES)
+    setFileInfo(null)
+    setFileError(null)
+    setPreviewSrc(null)
+    setServerError(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
   useEffect(() => {
     if (isOpen) {
       if (editTransaction) {
+        const normalizedType = normalizeTransactionType(editTransaction.type)
+        const normalizedValue = Number(editTransaction.value)
+
         reset({
-          type: editTransaction.type,
-          value: editTransaction.value,
+          type: normalizedType,
+          value: Number.isFinite(normalizedValue) ? Math.abs(normalizedValue) : (undefined as unknown as number),
           from: editTransaction.from ?? '',
           to: editTransaction.to ?? '',
           anexo: editTransaction.anexo ?? '',
@@ -164,9 +197,7 @@ export function TransactionModal({
           setPreviewSrc(null)
         }
       } else {
-        reset({ type: 'Credit', value: undefined as unknown as number, from: '', to: '', anexo: '' })
-        setFileInfo(null)
-        setPreviewSrc(null)
+        resetCreateState()
       }
       setFileError(null)
       setTimeout(() => firstInputRef.current?.focus(), 50)

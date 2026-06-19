@@ -73,6 +73,7 @@ function TransactionPageContent({ accountId, token }: Props) {
       <TransactionList onEdit={openEdit} />
 
       <TransactionModal
+        key={editingTransaction?.id ?? 'create'}
         isOpen={isModalOpen}
         onClose={closeModal}
         accountId={accountId}
