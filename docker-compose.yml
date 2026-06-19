@@ -1,13 +1,5 @@
 version: '3.8'
 
-# ─── ByteBank Multi-Zones ─────────────────────────────────────────────────
-# host (3002) ── rewrites /transactions/* ──► transactions (3001)
-#    │                                              │
-#    └──────────────► api (3000) ◄─────────────────┘
-#
-# IMPORTANTE: NEXTAUTH_SECRET deve ser idêntico em host e transactions —
-# é o que permite o SSO entre as zonas via cookie compartilhado.
-
 services:
   api:
     build:
@@ -22,15 +14,16 @@ services:
 
   transactions:
     build:
-      context: ./apps/transactions
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/transactions/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3000
     ports:
       - "3001:3001"
     environment:
       - PORT=3001
-      - NEXT_PUBLIC_API_URL=http://api:3000
-      - NEXTAUTH_SECRET=bytebank-secret-troque-em-producao
       - NODE_ENV=production
+      - NEXTAUTH_SECRET=bytebank-secret-troque-em-producao
     depends_on:
       - api
     networks:
@@ -38,16 +31,16 @@ services:
 
   host:
     build:
-      context: ./apps/host
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/host/Dockerfile
+      args:
+        TRANSACTIONS_URL: http://localhost:3001
+        NEXT_PUBLIC_API_URL: http://localhost:3000
     ports:
       - "3002:3002"
     environment:
       - PORT=3002
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://api:3000
-      # Rewrite server-side → usa o nome do serviço na rede Docker
-      - TRANSACTIONS_URL=http://transactions:3001
       - NEXTAUTH_SECRET=bytebank-secret-troque-em-producao
       - NEXTAUTH_URL=http://localhost:3002
     depends_on:
