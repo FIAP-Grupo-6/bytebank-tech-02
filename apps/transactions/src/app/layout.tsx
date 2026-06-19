@@ -11,6 +11,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: 'ByteBank – Transações',
   description: 'Gerenciamento de transações financeiras',
+  icons: {
+    icon: '/favicon.svg'
+  }
 }
 
 export default function RootLayout({
