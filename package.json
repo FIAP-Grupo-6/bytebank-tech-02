@@ -11,7 +11,8 @@
     "lint": "turbo run lint",
     "format": "turbo run format",
     "dev:host": "npm run dev --workspace=apps/host",
-    "dev:transactions": "npm run dev --workspace=apps/transactions"
+    "dev:transactions": "npm run dev --workspace=apps/transactions",
+    "storybook": "npm run storybook --workspace=packages/ui"
   },
   "devDependencies": {
     "turbo": "^2.3.3",
