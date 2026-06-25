@@ -1,6 +1,13 @@
-version: '3.8'
-
 services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - bytebank-network
+
   api:
     build:
       context: ./api
@@ -9,6 +16,9 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/bytebank
+    depends_on:
+      - mongo
     networks:
       - bytebank-network
 
@@ -24,6 +34,7 @@ services:
       - PORT=3001
       - NODE_ENV=production
       - NEXTAUTH_SECRET=bytebank-secret-troque-em-producao
+      - API_URL=http://api:3000
     depends_on:
       - api
     networks:
@@ -34,7 +45,7 @@ services:
       context: .
       dockerfile: apps/host/Dockerfile
       args:
-        TRANSACTIONS_URL: http://localhost:3001
+        TRANSACTIONS_URL: http://transactions:3001
         NEXT_PUBLIC_API_URL: http://localhost:3000
     ports:
       - "3002:3002"
@@ -43,11 +54,15 @@ services:
       - NODE_ENV=production
       - NEXTAUTH_SECRET=bytebank-secret-troque-em-producao
       - NEXTAUTH_URL=http://localhost:3002
+      - API_URL=http://api:3000
     depends_on:
       - api
       - transactions
     networks:
       - bytebank-network
+
+volumes:
+  mongo-data:
 
 networks:
   bytebank-network:
