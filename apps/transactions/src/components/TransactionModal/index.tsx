@@ -6,8 +6,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { X, Loader2, Upload, ImageIcon } from 'lucide-react'
 import { createTransaction, updateTransaction } from '@bytebank/api-client'
-import { useAppDispatch } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { addTransaction, updateTransactionAction, fetchTransactions } from '@/store/slices/transactionsSlice'
+import { selectContacts } from '@/store/selectors'
 import { cn } from '@bytebank/ui'
 import type { Transaction } from '@bytebank/types'
 
@@ -87,6 +88,18 @@ function normalizeTransactionType(type: unknown): 'Credit' | 'Debit' {
   }
 
   return 'Debit'
+}
+
+function getContactSuggestions(contacts: string[], search: string): string[] {
+  const normalizedSearch = search.trim().toLowerCase()
+
+  if(normalizedSearch === '') {
+    return []
+  }
+
+  return contacts
+    .filter((item) => item.toLowerCase().includes(normalizedSearch))
+    .slice(0,5)
 }
 
 // ─── CurrencyInput ───────────────────────────────────────────────────────────
@@ -212,6 +225,15 @@ export function TransactionModal({
     return () => document.removeEventListener('keydown', handleKey)
   }, [isOpen, onClose])
 
+  const [activeField, setActiveField] = useState<'from' | 'to' | null>(null)
+  const fromInputValue = watch('from') ?? ''
+  const toInputValue = watch('to') ?? ''
+
+  const contacts = useAppSelector(selectContacts)
+
+  const fromContactSuggestions = getContactSuggestions(contacts, fromInputValue)
+  const toContactSuggestions = getContactSuggestions(contacts, toInputValue)
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -234,6 +256,11 @@ export function TransactionModal({
       setPreviewSrc(null)
     }
   }
+
+  const handleSuggestionSelect = (field: 'from' | 'to', value: string) => {
+    setValue(field, value)
+    setActiveField(null)
+  } 
 
   const removeFile = () => {
     setFileInfo(null)
@@ -350,13 +377,78 @@ export function TransactionModal({
 
           {/* De / Para */}
           <div className="grid grid-cols-2 gap-3">
-            <div>
+            <div className="relative">
               <label htmlFor="transaction-from" className={labelClass}>De (opcional)</label>
-              <input id="transaction-from" type="text" placeholder="Origem" {...register('from')} className={inputClass} />
+              <input
+                id="transaction-from"
+                type="text"
+                placeholder="Origem"
+                autoComplete="on"
+                {...register('from')}
+                onFocus={() => setActiveField('from')}
+                onBlur={(e) => {
+                  register('from').onBlur(e)
+                  setActiveField(null)
+                }}
+                className={inputClass}
+              />
+              {activeField === 'from' && fromContactSuggestions.length > 0 && (
+                <ul
+                  role="listbox"
+                  aria-label="Sugestões de origem"
+                  className="absolute z-10 w-full mt-1 bg-card border border-border rounded-md shadow-lg overflow-hidden"
+                >
+                  {fromContactSuggestions.map((suggestion) => (
+                    <li key={suggestion} role="option" aria-selected={false}>
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleSuggestionSelect('from', suggestion)}
+                        className="w-full px-3 py-2 text-sm text-left text-foreground hover:bg-muted transition-colors"
+                      >
+                        {suggestion}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-            <div>
+
+            <div className="relative">
               <label htmlFor="transaction-to" className={labelClass}>Para (opcional)</label>
-              <input id="transaction-to" type="text" placeholder="Destino" {...register('to')} className={inputClass} />
+              <input
+                id="transaction-to"
+                type="text"
+                placeholder="Destino"
+                autoComplete="on"
+                {...register('to')}
+                onFocus={() => setActiveField('to')}
+                onBlur={(e) => {
+                  register('to').onBlur(e)
+                  setActiveField(null)
+                }}
+                className={inputClass}
+              />
+              {activeField === 'to' && toContactSuggestions.length > 0 && (
+                <ul
+                  role="listbox"
+                  aria-label="Sugestões de destino"
+                  className="absolute z-10 w-full mt-1 bg-card border border-border rounded-md shadow-lg overflow-hidden"
+                >
+                  {toContactSuggestions.map((suggestion) => (
+                    <li key={suggestion} role="option" aria-selected={false}>
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleSuggestionSelect('to', suggestion)}
+                        className="w-full px-3 py-2 text-sm text-left text-foreground hover:bg-muted transition-colors"
+                      >
+                        {suggestion}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 

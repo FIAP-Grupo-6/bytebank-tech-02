@@ -68,6 +68,24 @@ export const selectFilteredCount = createSelector(
   (filtered): number => filtered.length
 )
 
+export const selectContacts = createSelector(
+  [selectItems],
+  (transactions): string[] => {
+    const contacts = new Set<string>()
+
+    for(const transaction of transactions) {
+      if(transaction.from) {
+        contacts.add(transaction.from)
+      }
+      if(transaction.to) {
+        contacts.add(transaction.to)
+      }
+    }
+
+    return Array.from(contacts)
+  }
+)
+
 // ─── Re-exporta seletores base para uso direto ───────────────────────────────
 
 export { selectCurrentPage, selectFilters }
