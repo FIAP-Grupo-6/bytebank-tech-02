@@ -1,6 +1,15 @@
 import { RegisterForm } from './RegisterForm'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
-export default function CadastroPage() {
+export default async function CadastroPage() {
+  const session = await getServerSession(authOptions)
+  
+  if (session !== null) {
+    redirect('/dashboard')
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-md">
