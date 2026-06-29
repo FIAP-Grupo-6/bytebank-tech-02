@@ -4,10 +4,7 @@ import { getAccount } from '@bytebank/api-client'
 import { CreditCard, Lock, Unlock } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import type { Session } from 'next-auth'
 import type { Card } from '@bytebank/types'
-
-type ExtendedSession = Session & { accessToken?: string }
 
 function maskCardNumber(number: string) {
   return '**** **** **** ' + number.slice(-4)
@@ -72,7 +69,7 @@ function CardItem({ card }: { card: Card }) {
 }
 
 export default async function CardsPage() {
-  const session = (await getServerSession(authOptions)) as ExtendedSession
+  const session = await getServerSession(authOptions)
   const token = session?.accessToken || ''
 
   let cards: Card[] = []

@@ -10,15 +10,12 @@ import { DashboardCards } from '@/components/DashboardCards'
 import { Charts } from '@/components/Charts'
 import { DashboardWidgets } from '@/components/DashboardWidgets'
 import { RecentTransactions } from './RecentTransactions'
-import type { Session } from 'next-auth'
 import type { Transaction, DashboardSummary } from '@bytebank/types'
-
-type ExtendedSession = Session & { accessToken?: string }
 
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
-  const session = (await getServerSession(authOptions)) as ExtendedSession
+  const session = await getServerSession(authOptions)
   const token = session?.accessToken ?? ''
 
   let transactions: Transaction[] = []
