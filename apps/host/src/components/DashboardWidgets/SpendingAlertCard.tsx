@@ -59,6 +59,14 @@ export function SpendingAlertCard({ transactions, config, onEdit }: SpendingAler
             </p>
           </div>
         </div>
+        <button
+          onClick={onEdit}
+          aria-label="Editar alerta de gastos"
+          title="Editar"
+          className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        >
+          <Settings className="w-3.5 h-3.5" aria-hidden="true" />
+        </button>
       </CardHeader>
 
       <CardContent className="space-y-3">

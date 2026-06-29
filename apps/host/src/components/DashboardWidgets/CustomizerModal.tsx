@@ -49,6 +49,10 @@ const labelClass = 'text-xs font-medium text-foreground/70 block mb-1'
 export function CustomizerModal({ settings, onSave, onClose, focusWidget }: CustomizerModalProps) {
   const [draft, setDraft] = useState<DashboardSettings>(settings)
 
+  const showSavingsGoal  = !focusWidget || focusWidget === 'savingsGoal'
+  const showSpendingAlert = !focusWidget || focusWidget === 'spendingAlert'
+  const showBoth = showSavingsGoal && showSpendingAlert
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
     document.addEventListener('keydown', handler)
@@ -63,9 +67,15 @@ export function CustomizerModal({ settings, onSave, onClose, focusWidget }: Cust
         <div className="flex items-center justify-between px-5 py-4 border-b border-border sticky top-0 bg-card z-10">
           <div>
             <h2 id="customizer-title" className="text-base font-semibold text-foreground">
-              Personalizar dashboard
+              {focusWidget === 'savingsGoal'
+                ? 'Meta de economia'
+                : focusWidget === 'spendingAlert'
+                ? 'Alerta de gastos'
+                : 'Personalizar dashboard'}
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">Ative e configure os widgets</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {focusWidget ? 'Configure este widget' : 'Ative e configure os widgets'}
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -78,58 +88,61 @@ export function CustomizerModal({ settings, onSave, onClose, focusWidget }: Cust
 
         <div className="p-5 space-y-6">
           {/* Meta de economia */}
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold text-foreground">Meta de economia</span>
-              </div>
-              <Toggle
-                checked={draft.savingsGoal.enabled}
-                onChange={(v) => setDraft((d) => ({ ...d, savingsGoal: { ...d.savingsGoal, enabled: v } }))}
-              />
-            </div>
-            {draft.savingsGoal.enabled && (
-              <div className="space-y-3 pl-6 border-l border-border">
-                <div>
-                  <label htmlFor="goal-description" className={labelClass}>Descrição</label>
-                  <input
-                    id="goal-description"
-                    type="text"
-                    placeholder="Ex: Viagem, Reserva de emergência..."
-                    value={draft.savingsGoal.description}
-                    onChange={(e) =>
-                      setDraft((d) => ({ ...d, savingsGoal: { ...d.savingsGoal, description: e.target.value } }))
-                    }
-                    className={inputClass}
-                  />
+          {showSavingsGoal && (
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Target className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold text-foreground">Meta de economia</span>
                 </div>
-                <div>
-                  <label htmlFor="goal-target" className={labelClass}>Valor alvo (R$)</label>
-                  <input
-                    id="goal-target"
-                    type="number"
-                    min="1"
-                    step="100"
-                    placeholder="10000"
-                    value={draft.savingsGoal.targetAmount || ''}
-                    onChange={(e) =>
-                      setDraft((d) => ({
-                        ...d,
-                        savingsGoal: { ...d.savingsGoal, targetAmount: Math.max(0, parseFloat(e.target.value) || 0) },
-                      }))
-                    }
-                    className={inputClass}
-                  />
-                </div>
+                <Toggle
+                  checked={draft.savingsGoal.enabled}
+                  onChange={(v) => setDraft((d) => ({ ...d, savingsGoal: { ...d.savingsGoal, enabled: v } }))}
+                />
               </div>
-            )}
-          </section>
+              {draft.savingsGoal.enabled && (
+                <div className="space-y-3 pl-6 border-l border-border">
+                  <div>
+                    <label htmlFor="goal-description" className={labelClass}>Descrição</label>
+                    <input
+                      id="goal-description"
+                      type="text"
+                      placeholder="Ex: Viagem, Reserva de emergência..."
+                      value={draft.savingsGoal.description}
+                      onChange={(e) =>
+                        setDraft((d) => ({ ...d, savingsGoal: { ...d.savingsGoal, description: e.target.value } }))
+                      }
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="goal-target" className={labelClass}>Valor alvo (R$)</label>
+                    <input
+                      id="goal-target"
+                      type="number"
+                      min="1"
+                      step="100"
+                      placeholder="10000"
+                      value={draft.savingsGoal.targetAmount || ''}
+                      onChange={(e) =>
+                        setDraft((d) => ({
+                          ...d,
+                          savingsGoal: { ...d.savingsGoal, targetAmount: Math.max(0, parseFloat(e.target.value) || 0) },
+                        }))
+                      }
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
 
-          <hr className="border-border" />
+          {showBoth && <hr className="border-border" />}
 
           {/* Alerta de gastos */}
-          <section>
+          {showSpendingAlert && (
+            <section>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <TrendingDown className="w-4 h-4 text-destructive" />
@@ -186,7 +199,8 @@ export function CustomizerModal({ settings, onSave, onClose, focusWidget }: Cust
                 </div>
               </div>
             )}
-          </section>
+            </section>
+          )}
         </div>
 
         <div className="px-5 pb-5 pt-2 flex gap-3 sticky bottom-0 bg-card border-t border-border">
