@@ -24,7 +24,7 @@ import {
   selectTotalPages,
   selectCurrentPage,
 } from '@/store/selectors'
-import { Card, CardContent } from '@bytebank/ui'
+import { Card, CardContent, Modal } from '@bytebank/ui'
 import type { Transaction } from '@bytebank/types'
 
 function formatCurrency(value: number): string {
@@ -61,17 +61,7 @@ function ConfirmDeleteDialog({
   isDeleting: boolean
 }) {
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="confirm-delete-title"
-      className="fixed inset-0 z-50 flex items-center justify-center"
-    >
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onCancel}
-        aria-hidden="true"
-      />
+    <Modal onClose={onCancel} aria-labelledby="confirm-delete-title">
       <div className="relative bg-card border border-border rounded-lg p-6 w-full max-w-sm mx-4 z-10 shadow-xl">
         <div className="flex items-start gap-4 mb-5">
           <div className="w-10 h-10 rounded-full bg-destructive/15 flex items-center justify-center flex-shrink-0">
@@ -104,7 +94,7 @@ function ConfirmDeleteDialog({
           </button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -115,17 +105,12 @@ function FilePreviewModal({ dataUri, onClose }: { dataUri: string; onClose: () =
   const downloadName = getDownloadName(mimeType)
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
+    <Modal
+      onClose={onClose}
       aria-label="Visualizar imagem"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="p-4"
+      overlayClassName="bg-black/80"
     >
-      <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden="true"
-      />
       <div className="relative bg-card border border-border rounded-lg w-full max-w-3xl max-h-[90vh] flex flex-col z-10 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0">
@@ -162,7 +147,7 @@ function FilePreviewModal({ dataUri, onClose }: { dataUri: string; onClose: () =
           />
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }
 

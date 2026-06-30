@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { X, Check, Target, TrendingDown } from 'lucide-react'
-import { cn } from '@bytebank/ui'
+import { cn, Modal } from '@bytebank/ui'
 import type { DashboardSettings } from './types'
 
 interface ToggleProps {
@@ -53,16 +53,8 @@ export function CustomizerModal({ settings, onSave, onClose, focusWidget }: Cust
   const showSpendingAlert = !focusWidget || focusWidget === 'spendingAlert'
   const showBoth = showSavingsGoal && showSpendingAlert
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [onClose])
-
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="customizer-title" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-
+    <Modal onClose={onClose} aria-labelledby="customizer-title" className="items-end sm:items-center">
       <div className="relative bg-card border border-border rounded-t-2xl sm:rounded-xl w-full sm:max-w-md mx-0 sm:mx-4 z-10 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-5 py-4 border-b border-border sticky top-0 bg-card z-10">
           <div>
@@ -221,6 +213,6 @@ export function CustomizerModal({ settings, onSave, onClose, focusWidget }: Cust
           </button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }

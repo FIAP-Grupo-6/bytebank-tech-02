@@ -9,7 +9,7 @@ import { createTransaction, updateTransaction } from '@bytebank/api-client'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { addTransaction, updateTransactionAction, fetchTransactions } from '@/store/slices/transactionsSlice'
 import { selectContacts } from '@/store/selectors'
-import { cn } from '@bytebank/ui'
+import { cn, Modal } from '@bytebank/ui'
 import type { Transaction } from '@bytebank/types'
 
 const schema = z.object({
@@ -217,14 +217,6 @@ export function TransactionModal({
     }
   }, [isOpen, editTransaction, reset])
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) onClose()
-    }
-    document.addEventListener('keydown', handleKey)
-    return () => document.removeEventListener('keydown', handleKey)
-  }, [isOpen, onClose])
-
   const [activeField, setActiveField] = useState<'from' | 'to' | null>(null)
   const fromInputValue = watch('from') ?? ''
   const toInputValue = watch('to') ?? ''
@@ -300,18 +292,7 @@ export function TransactionModal({
   if (!isOpen) return null
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center"
-    >
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
+    <Modal onClose={onClose} aria-labelledby="modal-title">
       <div className="relative rounded-lg border bg-card text-card-foreground shadow-sm w-full max-w-md mx-4 p-6 z-10 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 id="modal-title" className="text-lg font-semibold text-foreground">
@@ -537,6 +518,6 @@ export function TransactionModal({
           </div>
         </form>
       </div>
-    </div>
+    </Modal>
   )
 }
