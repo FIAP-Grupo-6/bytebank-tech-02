@@ -24,4 +24,5 @@ export {
 } from './Select'
 export { DatePicker, Calendar, type DatePickerProps } from './DatePicker'
 export { Logo } from './Logo'
+export { AppSidebar, type AppSidebarProps, type NavItem } from './AppSidebar'
 export { cn } from './cn'

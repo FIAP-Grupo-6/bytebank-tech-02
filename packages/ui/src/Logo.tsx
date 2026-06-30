@@ -18,7 +18,7 @@ export function Logo({ withText = true, textClassName, size = 'md' }: LogoProps)
     <div className="flex items-center gap-2">
       <div
         className={clsx(
-          'bg-brand-green rounded-lg flex items-center justify-center',
+          'bg-brand-green rounded-lg flex items-center justify-center flex-shrink-0',
           box
         )}
         aria-hidden="true"
