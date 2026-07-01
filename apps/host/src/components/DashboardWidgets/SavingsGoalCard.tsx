@@ -3,8 +3,8 @@
 import { Check, Target, Settings } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@bytebank/ui'
 import { cn } from '@bytebank/ui'
-import { formatBRL } from './utils'
 import type { SavingsGoalConfig } from './types'
+import { formatBRL } from '@/lib/format'
 
 interface ProgressBarProps {
   pct: number

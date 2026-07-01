@@ -1,13 +1,7 @@
 import { TrendingUp, TrendingDown, Wallet } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@bytebank/ui'
 import type { DashboardSummary } from '@bytebank/types'
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value)
-}
+import { formatBRL } from '@/lib/format'
 
 export function DashboardCards({ summary }: { summary: DashboardSummary }) {
   return (
@@ -23,9 +17,9 @@ export function DashboardCards({ summary }: { summary: DashboardSummary }) {
           <div className="flex items-center justify-between gap-2 overflow-hidden">
             <p
               className="text-xl lg:text-2xl font-bold text-foreground tabular-nums truncate min-w-0"
-              title={formatCurrency(summary.balance)}
+              title={formatBRL(summary.balance)}
             >
-              {formatCurrency(summary.balance)}
+              {formatBRL(summary.balance)}
             </p>
             <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
               <Wallet className="w-5 h-5 text-primary" />
@@ -46,9 +40,9 @@ export function DashboardCards({ summary }: { summary: DashboardSummary }) {
           <div className="flex items-center justify-between gap-2 overflow-hidden">
             <p
               className="text-xl lg:text-2xl font-bold text-success tabular-nums truncate min-w-0"
-              title={formatCurrency(summary.totalCredit)}
+              title={formatBRL(summary.totalCredit)}
             >
-              {formatCurrency(summary.totalCredit)}
+              {formatBRL(summary.totalCredit)}
             </p>
             <div className="w-10 h-10 rounded-full bg-success/15 flex items-center justify-center flex-shrink-0">
               <TrendingUp className="w-5 h-5 text-success" />
@@ -68,9 +62,9 @@ export function DashboardCards({ summary }: { summary: DashboardSummary }) {
           <div className="flex items-center justify-between gap-2 overflow-hidden">
             <p
               className="text-xl lg:text-2xl font-bold text-destructive tabular-nums truncate min-w-0"
-              title={formatCurrency(summary.totalDebit)}
+              title={formatBRL(summary.totalDebit)}
             >
-              {formatCurrency(summary.totalDebit)}
+              {formatBRL(summary.totalDebit)}
             </p>
             <div className="w-10 h-10 rounded-full bg-destructive/15 flex items-center justify-center flex-shrink-0">
               <TrendingDown className="w-5 h-5 text-destructive" />

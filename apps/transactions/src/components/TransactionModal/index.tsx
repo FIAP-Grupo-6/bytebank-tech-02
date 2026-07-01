@@ -11,6 +11,8 @@ import { addTransaction, updateTransactionAction, fetchTransactions } from '@/st
 import { selectContacts } from '@/store/selectors'
 import { cn, Modal } from '@bytebank/ui'
 import type { Transaction } from '@bytebank/types'
+import { formatDecimal } from '@/lib/format'
+import { isDataUri, formatFileSize, fileToBase64 } from '@/lib/file'
 
 const schema = z.object({
   type: z.enum(['Credit', 'Debit'], { required_error: 'Selecione o tipo' }),
@@ -50,32 +52,6 @@ const CREATE_DEFAULT_VALUES: FormData = {
   anexo: '',
 }
 
-function formatBRL(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return ''
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
-}
-
-function isDataUri(value: string): boolean {
-  return value.startsWith('data:')
-}
-
 function normalizeTransactionType(type: unknown): 'Credit' | 'Debit' {
   const normalized = String(type ?? '')
     .trim()
@@ -112,10 +88,10 @@ interface CurrencyInputProps {
 }
 
 function CurrencyInput({ value, onChange, inputRef, hasError }: CurrencyInputProps) {
-  const [display, setDisplay] = useState(value > 0 ? formatBRL(value) : '')
+  const [display, setDisplay] = useState(value > 0 ? formatDecimal(value) : '')
 
   useEffect(() => {
-    setDisplay(value > 0 ? formatBRL(value) : '')
+    setDisplay(value > 0 ? formatDecimal(value) : '')
   }, [value])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +103,7 @@ function CurrencyInput({ value, onChange, inputRef, hasError }: CurrencyInputPro
     }
     const cents = parseInt(digits, 10)
     const reais = cents / 100
-    setDisplay(formatBRL(reais))
+    setDisplay(formatDecimal(reais))
     onChange(reais)
   }
 

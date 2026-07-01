@@ -17,6 +17,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Card, CardContent, CardHeader } from '@bytebank/ui'
 import type { Transaction } from '@bytebank/types'
+import { formatBRL } from '@/lib/format'
 
 function buildMonthlyData(transactions: Transaction[]) {
   const map = new Map<string, { credit: number; debit: number }>()
@@ -65,8 +66,6 @@ const TOOLTIP_ITEM_STYLE = { color: 'hsl(215, 20%, 88%)' }
 const TOOLTIP_LABEL_STYLE = { color: 'hsl(215, 20%, 65%)', fontWeight: 500 }
 const TOOLTIP_CURSOR = { fill: 'hsl(220, 14%, 16%)' }
 
-const formatBRL = (value: number) =>
-  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 
 export function Charts({ transactions }: { transactions: Transaction[] }) {
   const monthlyData = buildMonthlyData(transactions)

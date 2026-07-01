@@ -3,11 +3,7 @@ import { ptBR } from 'date-fns/locale'
 import { ArrowDownLeft, ArrowUpRight, ArrowRight } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@bytebank/ui'
 import type { Transaction } from '@bytebank/types'
-
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-    Math.abs(value)
-  )
+import { formatBRL } from '@/lib/format'
 
 export function RecentTransactions({ transactions }: { transactions: Transaction[] }) {
   return (
@@ -66,7 +62,7 @@ export function RecentTransactions({ transactions }: { transactions: Transaction
                       isCredit ? 'text-success' : 'text-destructive'
                     }`}
                   >
-                    {isCredit ? '+' : '-'} {formatCurrency(t.value)}
+                    {formatBRL(t.value)}
                   </span>
                 </div>
               )

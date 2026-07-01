@@ -26,28 +26,8 @@ import {
 } from '@/store/selectors'
 import { Card, CardContent, Modal } from '@bytebank/ui'
 import type { Transaction } from '@bytebank/types'
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Math.abs(value))
-}
-
-function isDataUri(value: string): boolean {
-  return value.startsWith('data:')
-}
-
-function getMimeType(dataUri: string): string {
-  return dataUri.split(';')[0].split(':')[1] ?? ''
-}
-
-function getDownloadName(mimeType: string): string {
-  const map: Record<string, string> = {
-    'image/png': 'anexo.png',
-    'image/jpeg': 'anexo.jpg',
-    'image/gif': 'anexo.gif',
-    'image/webp': 'anexo.webp',
-  }
-  return map[mimeType] ?? 'anexo.img'
-}
+import { formatAbsoluteBRL, formatBRL } from '@/lib/format'
+import { isDataUri, getMimeType, getDownloadName } from '@/lib/file'
 
 // ─── ConfirmDeleteDialog ─────────────────────────────────────────────────────
 
@@ -223,9 +203,9 @@ function TransactionRow({
         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
           <p
             className={`text-sm font-semibold tabular-nums ${isCredit ? 'text-success' : 'text-destructive'}`}
-            aria-label={`${isCredit ? 'Entrada' : 'Saída'} de ${formatCurrency(transaction.value)}`}
+            aria-label={`${isCredit ? 'Entrada' : 'Saída'} de ${formatAbsoluteBRL(transaction.value)}`}
           >
-            {isCredit ? '+' : '-'} {formatCurrency(transaction.value)}
+            {formatBRL(transaction.value)}
           </p>
 
           {/* Botão de preview — visível quando tem imagem */}

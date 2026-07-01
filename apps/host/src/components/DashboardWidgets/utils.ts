@@ -1,9 +1,5 @@
 import type { Transaction } from '@bytebank/types'
 
-export function formatBRL(value: number): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
-}
-
 export function progressColor(pct: number, alertThreshold = 80): string {
   if (pct >= 100) return 'hsl(var(--destructive))'
   if (pct >= alertThreshold) return 'hsl(38, 92%, 50%)'

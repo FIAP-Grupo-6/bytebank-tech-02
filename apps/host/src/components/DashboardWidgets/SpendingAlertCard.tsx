@@ -3,9 +3,10 @@
 import { TrendingDown, Settings } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@bytebank/ui'
 import { cn } from '@bytebank/ui'
-import { formatBRL, progressColor, currentMonthDebit } from './utils'
+import { progressColor, currentMonthDebit } from './utils'
 import type { SpendingAlertConfig } from './types'
 import type { Transaction } from '@bytebank/types'
+import { formatBRL } from '@/lib/format'
 
 interface ProgressBarProps {
   pct: number
