@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { decode } from 'next-auth/jwt'
 
@@ -24,7 +25,7 @@ interface SessionData {
   username: string
 }
 
-export async function getSessionFromCookie(): Promise<SessionData | null> {
+export const getSessionFromCookie = cache(async (): Promise<SessionData | null> => {
   const cookieStore = cookies()
 
   // Em produção (HTTPS) o NextAuth prefixa o cookie com __Secure-
@@ -51,4 +52,4 @@ export async function getSessionFromCookie(): Promise<SessionData | null> {
     // Cookie inválido/expirado ou secret divergente entre as zonas
     return null
   }
-}
+})
