@@ -4,6 +4,7 @@ import { getAccount } from '@bytebank/api-client'
 import { CreditCard, Lock, Unlock } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { Logo } from '@bytebank/ui'
 import type { Card } from '@bytebank/types'
 
 function maskCardNumber(number: string) {
@@ -16,9 +17,7 @@ function CardItem({ card }: { card: Card }) {
       {/* Visual do cartão */}
       <div className="bg-gradient-to-br from-surface-sidebar to-brand-green rounded-xl p-5 mb-4 text-white">
         <div className="flex justify-between items-start mb-8">
-          <div className="w-8 h-8 bg-brand-green rounded-lg flex items-center justify-center">
-            <span className="font-bold text-xs">B</span>
-          </div>
+          <Logo size="md" withText={false} />
           <span className="text-xs font-medium uppercase tracking-wider opacity-80">
             {card.functions}
           </span>
