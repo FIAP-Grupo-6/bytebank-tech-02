@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { LayoutDashboard, ArrowLeftRight, CreditCard } from 'lucide-react'
+import { LayoutDashboard, ArrowLeftRight, CreditCard, Info } from 'lucide-react'
 import { AppSidebar } from '@bytebank/ui'
 
 export function Sidebar() {
@@ -14,9 +14,14 @@ export function Sidebar() {
     { href: '/cards', label: 'Cartões', icon: CreditCard, active: pathname === '/cards' },
   ]
 
+  const footerItems = [
+    { href: '/sobre', label: 'Sobre', icon: Info, active: pathname === '/sobre' },
+  ]
+
   return (
     <AppSidebar
       navItems={navItems}
+      footerItems={footerItems}
       onSignOut={() => signOut({ callbackUrl: '/login' })}
     />
   )

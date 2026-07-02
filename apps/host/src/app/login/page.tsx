@@ -56,6 +56,11 @@ export default async function LoginPage() {
               Criar conta
             </a>
           </p>
+          <p className="text-center text-xs text-muted-foreground/50 mt-3">
+            <a href="/sobre" className="hover:text-muted-foreground hover:underline transition-colors">
+              Sobre o ByteBank
+            </a>
+          </p>
         </div>
       </div>
     </div>
