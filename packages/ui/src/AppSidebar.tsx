@@ -14,10 +14,11 @@ export interface NavItem {
 
 export interface AppSidebarProps {
   navItems: NavItem[]
+  footerItems?: NavItem[]
   onSignOut: () => void
 }
 
-export function AppSidebar({ navItems, onSignOut }: AppSidebarProps) {
+export function AppSidebar({ navItems, footerItems, onSignOut }: AppSidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
@@ -86,8 +87,30 @@ export function AppSidebar({ navItems, onSignOut }: AppSidebarProps) {
           })}
         </nav>
 
-        {/* Logout */}
-        <div className="px-2 py-4 border-t border-border/30">
+        {/* Footer items + logout */}
+        <div className="px-2 py-4 border-t border-border/30 space-y-1">
+          {footerItems?.map((item) => {
+            const Icon = item.icon
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                aria-current={item.active ? 'page' : undefined}
+                title={item.label}
+                onClick={() => setMobileOpen(false)}
+                className={clsx(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                  'md:justify-center lg:justify-start',
+                  item.active
+                    ? 'bg-primary/15 text-primary'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                )}
+              >
+                <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                <span className="md:hidden lg:block">{item.label}</span>
+              </a>
+            )
+          })}
           <button
             onClick={onSignOut}
             title="Sair"
