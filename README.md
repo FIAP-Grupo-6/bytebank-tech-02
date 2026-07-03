@@ -87,13 +87,19 @@ NEXTAUTH_SECRET=qualquer-string-secreta-aqui
 
 ### 4. Suba os apps
 
-Em dois terminais separados:
+Para subir todos os apps de uma vez (recomendado):
 
 ```bash
-# Terminal 1 — microfrontend de transações (porta 3001)
+npm run dev
+```
+
+Ou individualmente, caso prefira terminais separados:
+
+```bash
+# Microfrontend de transações (porta 3001)
 npm run dev:transactions
 
-# Terminal 2 — host shell (porta 3002)
+# Host shell (porta 3002)
 npm run dev:host
 ```
 
