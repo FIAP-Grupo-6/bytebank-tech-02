@@ -78,25 +78,18 @@ function getContactSuggestions(contacts: string[], search: string): string[] {
     .slice(0,5)
 }
 
-function getSubmitErrorMessage(err: unknown, hasAttachment: boolean): string {
+function getSubmitErrorMessage(err: unknown): string {
   if (err instanceof Error) {
     const normalizedMessage = err.message.trim().toLowerCase()
 
-    if (
-      hasAttachment &&
-      (normalizedMessage.includes('failed to fetch') ||
-        normalizedMessage.includes('networkerror') ||
-        normalizedMessage.includes('fetch'))
-    ) {
-      return 'A imagem está grande demais para enviar. Tente uma imagem menor.'
+    if (normalizedMessage.includes('failed to fetch')) {
+      return 'Erro ao salvar transação.';
     }
 
     return err.message
   }
 
-  return hasAttachment
-    ? 'A imagem está grande demais para enviar. Tente uma imagem menor.'
-    : 'Erro ao salvar transação'
+  return 'Erro ao salvar transação';
 }
 
 // ─── CurrencyInput ───────────────────────────────────────────────────────────
@@ -280,7 +273,7 @@ export function TransactionModal({
       dispatch(fetchTransactions({ accountId, token }))
       onClose()
     } catch (err: unknown) {
-      setServerError(getSubmitErrorMessage(err, !!data.anexo))
+      setServerError(getSubmitErrorMessage(err))
     } finally {
       setIsSubmitting(false)
     }
