@@ -78,6 +78,27 @@ function getContactSuggestions(contacts: string[], search: string): string[] {
     .slice(0,5)
 }
 
+function getSubmitErrorMessage(err: unknown, hasAttachment: boolean): string {
+  if (err instanceof Error) {
+    const normalizedMessage = err.message.trim().toLowerCase()
+
+    if (
+      hasAttachment &&
+      (normalizedMessage.includes('failed to fetch') ||
+        normalizedMessage.includes('networkerror') ||
+        normalizedMessage.includes('fetch'))
+    ) {
+      return 'A imagem está grande demais para enviar. Tente uma imagem menor.'
+    }
+
+    return err.message
+  }
+
+  return hasAttachment
+    ? 'A imagem está grande demais para enviar. Tente uma imagem menor.'
+    : 'Erro ao salvar transação'
+}
+
 // ─── CurrencyInput ───────────────────────────────────────────────────────────
 
 interface CurrencyInputProps {
@@ -259,7 +280,7 @@ export function TransactionModal({
       dispatch(fetchTransactions({ accountId, token }))
       onClose()
     } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : 'Erro ao salvar transação')
+      setServerError(getSubmitErrorMessage(err, !!data.anexo))
     } finally {
       setIsSubmitting(false)
     }
