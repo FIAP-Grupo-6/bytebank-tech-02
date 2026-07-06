@@ -25,7 +25,6 @@ bytebank-fase2/
 │   ├── types/          → Interfaces TypeScript compartilhadas
 │   └── api-client/     → Funções de chamada à API (centralizadas)
 │
-├── CHECKLIST.md        → Mapa requisito do PDF → implementação
 └── docker-compose.yml  → Orquestra API + host + transactions
 ```
 
