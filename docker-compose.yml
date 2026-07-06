@@ -33,7 +33,7 @@ services:
     environment:
       - PORT=3001
       - NODE_ENV=production
-      - NEXTAUTH_SECRET=bytebank-secret-troque-em-producao
+      - NEXTAUTH_SECRET=bytebank-dev-secret-troque-em-producao
       - API_URL=http://api:3000
     depends_on:
       - api
@@ -52,7 +52,7 @@ services:
     environment:
       - PORT=3002
       - NODE_ENV=production
-      - NEXTAUTH_SECRET=bytebank-secret-troque-em-producao
+      - NEXTAUTH_SECRET=bytebank-dev-secret-troque-em-producao
       - NEXTAUTH_URL=http://localhost:3002
       - API_URL=http://api:3000
     depends_on:
