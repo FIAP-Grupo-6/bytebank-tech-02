@@ -131,6 +131,18 @@ docker-compose down
 
 ---
 
+## Ambiente de produção
+
+| Camada      | Plataforma  | URL / Serviço                                      |
+|-------------|-------------|----------------------------------------------------|
+| Frontend    | Vercel      | https://bytebank-tech-02-host.vercel.app           |
+| Back-end    | Render      | API REST (Node.js)                                 |
+| Banco       | MongoDB Atlas | Cluster gerenciado na nuvem                      |
+
+> O acesso completo ao sistema está disponível em **https://bytebank-tech-02-host.vercel.app**
+
+---
+
 ## Deploy na Vercel
 
 O deploy é feito em **dois projetos separados** na Vercel, um para cada app.
@@ -217,7 +229,9 @@ O deploy é feito em **dois projetos separados** na Vercel, um para cada app.
 | Microfrontend    | Multi-Zones (oficial do Next.js, via rewrites)     |
 | Renderização     | SSR (dashboard, cartões) + SSG (página sobre)      |
 | Containerização  | Docker + Docker Compose                            |
-| Deploy           | Vercel                                             |
+| Deploy frontend  | Vercel                                             |
+| Deploy back-end  | Render                                             |
+| Banco de dados   | MongoDB Atlas                                      |
 
 ---
 
