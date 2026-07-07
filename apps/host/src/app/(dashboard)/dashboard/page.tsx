@@ -39,7 +39,7 @@ export default async function DashboardPage() {
     <div className="p-6 space-y-6 max-w-6xl mx-auto">
       <header>
         <h1 className="text-xl font-semibold text-foreground">
-          Olá, {session?.user?.name?.split(' ')[0] ?? 'visitante'} 👋
+          Olá, {session?.user?.name?.split(' ')[0] ?? 'visitante'}
         </h1>
         <p className="text-sm text-muted-foreground">
           Aqui está um resumo da sua conta
