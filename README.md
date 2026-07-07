@@ -43,8 +43,8 @@ bytebank-fase2/
 ### 1. Clone e instale as dependências
 
 ```bash
-git clone https://github.com/SEU-ORG/bytebank-fase2.git
-cd bytebank-fase2
+git clone https://github.com/FIAP-Grupo-6/bytebank-tech-02.git
+cd bytebank-tech-02
 npm install
 ```
 
