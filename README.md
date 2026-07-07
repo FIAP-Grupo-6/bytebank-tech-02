@@ -210,8 +210,6 @@ O deploy é feito em **dois projetos separados** na Vercel, um para cada app.
 - [x] Docker + Docker Compose para todos os serviços
 - [x] Deploy-ready para Vercel
 
-> Consulte o **CHECKLIST.md** para o mapa completo requisito → implementação.
-
 ---
 
 ## Stack
