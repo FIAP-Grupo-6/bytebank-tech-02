@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import type React from 'react'
 import { X, Check, Target, TrendingDown } from 'lucide-react'
 import { cn, Modal } from '@bytebank/ui'
 import type { DashboardSettings } from './types'
@@ -45,6 +46,52 @@ const inputClass =
   'placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
 
 const labelClass = 'text-xs font-medium text-foreground/70 block mb-1'
+
+function formatDecimal(value: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+interface CurrencyInputProps {
+  id: string
+  label: string
+  value: number
+  onChange: (v: number) => void
+  placeholder?: string
+}
+
+function CurrencyInput({ id, label, value, onChange, placeholder = '0,00' }: CurrencyInputProps) {
+  const [display, setDisplay] = useState(value > 0 ? formatDecimal(value) : '')
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '')
+    if (!digits) {
+      setDisplay('')
+      onChange(0)
+      return
+    }
+    const reais = parseInt(digits, 10) / 100
+    setDisplay(formatDecimal(reais))
+    onChange(reais)
+  }
+
+  return (
+    <div>
+      <label htmlFor={id} className={labelClass}>{label}</label>
+      <input
+        id={id}
+        type="text"
+        inputMode="decimal"
+        placeholder={placeholder}
+        value={display}
+        onChange={handleChange}
+        className={inputClass}
+      />
+    </div>
+  )
+}
 
 export function CustomizerModal({ settings, onSave, onClose, focusWidget }: CustomizerModalProps) {
   const [draft, setDraft] = useState<DashboardSettings>(settings)
@@ -107,24 +154,15 @@ export function CustomizerModal({ settings, onSave, onClose, focusWidget }: Cust
                       className={inputClass}
                     />
                   </div>
-                  <div>
-                    <label htmlFor="goal-target" className={labelClass}>Valor alvo (R$)</label>
-                    <input
-                      id="goal-target"
-                      type="number"
-                      min="1"
-                      step="100"
-                      placeholder="10000"
-                      value={draft.savingsGoal.targetAmount || ''}
-                      onChange={(e) =>
-                        setDraft((d) => ({
-                          ...d,
-                          savingsGoal: { ...d.savingsGoal, targetAmount: Math.max(0, parseFloat(e.target.value) || 0) },
-                        }))
-                      }
-                      className={inputClass}
-                    />
-                  </div>
+                  <CurrencyInput
+                    id="goal-target"
+                    label="Valor alvo (R$)"
+                    placeholder="10.000,00"
+                    value={draft.savingsGoal.targetAmount}
+                    onChange={(v) =>
+                      setDraft((d) => ({ ...d, savingsGoal: { ...d.savingsGoal, targetAmount: v } }))
+                    }
+                  />
                 </div>
               )}
             </section>
@@ -147,24 +185,15 @@ export function CustomizerModal({ settings, onSave, onClose, focusWidget }: Cust
             </div>
             {draft.spendingAlert.enabled && (
               <div className="space-y-3 pl-6 border-l border-border">
-                <div>
-                  <label htmlFor="alert-limit" className={labelClass}>Limite mensal (R$)</label>
-                  <input
-                    id="alert-limit"
-                    type="number"
-                    min="1"
-                    step="100"
-                    placeholder="3000"
-                    value={draft.spendingAlert.monthlyLimit || ''}
-                    onChange={(e) =>
-                      setDraft((d) => ({
-                        ...d,
-                        spendingAlert: { ...d.spendingAlert, monthlyLimit: Math.max(0, parseFloat(e.target.value) || 0) },
-                      }))
-                    }
-                    className={inputClass}
-                  />
-                </div>
+                <CurrencyInput
+                  id="alert-limit"
+                  label="Limite mensal (R$)"
+                  placeholder="3.000,00"
+                  value={draft.spendingAlert.monthlyLimit}
+                  onChange={(v) =>
+                    setDraft((d) => ({ ...d, spendingAlert: { ...d.spendingAlert, monthlyLimit: v } }))
+                  }
+                />
                 <div>
                   <label htmlFor="alert-threshold" className={labelClass}>
                     Alertar a partir de {draft.spendingAlert.alertThreshold}% do limite
