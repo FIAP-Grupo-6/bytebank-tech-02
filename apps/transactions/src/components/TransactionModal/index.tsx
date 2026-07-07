@@ -6,13 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { X, Loader2, Upload, ImageIcon } from 'lucide-react'
 import { createTransaction, updateTransaction } from '@bytebank/api-client'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { useAppDispatch } from '@/store/hooks'
 import { addTransaction, updateTransactionAction, fetchTransactions } from '@/store/slices/transactionsSlice'
-import { selectContacts } from '@/store/selectors'
-import { cn, Modal } from '@bytebank/ui'
+import { cn, Modal, Combobox } from '@bytebank/ui'
 import type { Transaction } from '@bytebank/types'
 import { formatDecimal } from '@/lib/format'
 import { isDataUri, formatFileSize, fileToBase64 } from '@/lib/file'
+import { getCategoriesByType, getSubcategories } from '@/lib/categories'
 
 const schema = z.object({
   type: z.enum(['Credit', 'Debit'], { required_error: 'Selecione o tipo' }),
@@ -20,7 +20,7 @@ const schema = z.object({
     .number({ invalid_type_error: 'Informe o valor' })
     .finite('Informe um valor válido')
     .positive('O valor deve ser positivo'),
-  from: z.string().optional(),
+  from: z.string().min(1, 'Selecione uma categoria'),
   to: z.string().optional(),
   anexo: z.string().optional(),
 })
@@ -57,25 +57,13 @@ function normalizeTransactionType(type: unknown): 'Credit' | 'Debit' {
     .trim()
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
 
   if (normalized === 'credit' || normalized === 'credito' || normalized === 'entrada') {
     return 'Credit'
   }
 
   return 'Debit'
-}
-
-function getContactSuggestions(contacts: string[], search: string): string[] {
-  const normalizedSearch = search.trim().toLowerCase()
-
-  if(normalizedSearch === '') {
-    return []
-  }
-
-  return contacts
-    .filter((item) => item.toLowerCase().includes(normalizedSearch))
-    .slice(0,5)
 }
 
 function getSubmitErrorMessage(err: unknown): string {
@@ -169,6 +157,11 @@ export function TransactionModal({
   })
 
   const selectedType = watch('type')
+  const selectedCategory = watch('from') ?? ''
+  const selectedSubcategory = watch('to') ?? ''
+
+  const categories = getCategoriesByType(selectedType)
+  const subcategories = getSubcategories(selectedType, selectedCategory)
 
   const resetCreateState = () => {
     reset(CREATE_DEFAULT_VALUES)
@@ -207,15 +200,6 @@ export function TransactionModal({
     }
   }, [isOpen, editTransaction, reset])
 
-  const [activeField, setActiveField] = useState<'from' | 'to' | null>(null)
-  const fromInputValue = watch('from') ?? ''
-  const toInputValue = watch('to') ?? ''
-
-  const contacts = useAppSelector(selectContacts)
-
-  const fromContactSuggestions = getContactSuggestions(contacts, fromInputValue)
-  const toContactSuggestions = getContactSuggestions(contacts, toInputValue)
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -238,11 +222,6 @@ export function TransactionModal({
       setPreviewSrc(null)
     }
   }
-
-  const handleSuggestionSelect = (field: 'from' | 'to', value: string) => {
-    setValue(field, value)
-    setActiveField(null)
-  } 
 
   const removeFile = () => {
     setFileInfo(null)
@@ -314,7 +293,17 @@ export function TransactionModal({
                       : 'border-border text-muted-foreground hover:border-input'
                   )}
                 >
-                  <input type="radio" value={type} {...register('type')} className="sr-only" />
+                  <input
+                    type="radio"
+                    value={type}
+                    {...register('type')}
+                    onChange={(e) => {
+                      register('type').onChange(e)
+                      setValue('from', '')
+                      setValue('to', '')
+                    }}
+                    className="sr-only"
+                  />
                   {type === 'Credit' ? '↓ Crédito' : '↑ Débito'}
                 </label>
               ))}
@@ -346,80 +335,68 @@ export function TransactionModal({
             )}
           </div>
 
-          {/* De / Para */}
+          {/* Categoria / Subcategoria */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="relative">
-              <label htmlFor="transaction-from" className={labelClass}>De (opcional)</label>
-              <input
-                id="transaction-from"
-                type="text"
-                placeholder="Origem"
-                autoComplete="on"
-                {...register('from')}
-                onFocus={() => setActiveField('from')}
-                onBlur={(e) => {
-                  register('from').onBlur(e)
-                  setActiveField(null)
-                }}
-                className={inputClass}
+            {/* Categoria — obrigatória */}
+            <div>
+              <div className="h-6 flex items-center mb-1.5">
+                <span className="text-sm font-medium text-foreground/80">
+                  Categoria <span className="text-destructive" aria-hidden="true">*</span>
+                </span>
+              </div>
+              <Controller
+                name="from"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    id="transaction-category"
+                    placeholder="Selecione..."
+                    searchPlaceholder="Buscar categoria..."
+                    emptyText="Nenhuma categoria encontrada."
+                    value={field.value || undefined}
+                    onValueChange={(val) => {
+                      field.onChange(val)
+                      setValue('to', '')
+                    }}
+                    error={errors.from?.message}
+                    options={categories.map((c) => ({ value: c.value, label: c.value }))}
+                  />
+                )}
               />
-              {activeField === 'from' && fromContactSuggestions.length > 0 && (
-                <ul
-                  role="listbox"
-                  aria-label="Sugestões de origem"
-                  className="absolute z-10 w-full mt-1 bg-card border border-border rounded-md shadow-lg overflow-hidden"
-                >
-                  {fromContactSuggestions.map((suggestion) => (
-                    <li key={suggestion} role="option" aria-selected={false}>
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => handleSuggestionSelect('from', suggestion)}
-                        className="w-full px-3 py-2 text-sm text-left text-foreground hover:bg-muted transition-colors"
-                      >
-                        {suggestion}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
 
-            <div className="relative">
-              <label htmlFor="transaction-to" className={labelClass}>Para (opcional)</label>
-              <input
-                id="transaction-to"
-                type="text"
-                placeholder="Destino"
-                autoComplete="on"
-                {...register('to')}
-                onFocus={() => setActiveField('to')}
-                onBlur={(e) => {
-                  register('to').onBlur(e)
-                  setActiveField(null)
-                }}
-                className={inputClass}
+            {/* Subcategoria — opcional, com botão de limpar */}
+            <div>
+              <div className="h-6 flex items-center justify-between mb-1.5">
+                <span className="text-sm font-medium text-foreground/80">Subcategoria</span>
+                {selectedSubcategory && (
+                  <button
+                    type="button"
+                    onClick={() => setValue('to', '')}
+                    aria-label="Limpar subcategoria"
+                    className="flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="w-3 h-3" aria-hidden="true" />
+                    Limpar
+                  </button>
+                )}
+              </div>
+              <Controller
+                name="to"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    id="transaction-subcategory"
+                    placeholder="Selecione..."
+                    searchPlaceholder="Buscar subcategoria..."
+                    emptyText="Nenhuma subcategoria encontrada."
+                    value={field.value || undefined}
+                    onValueChange={field.onChange}
+                    disabled={!selectedCategory || subcategories.length === 0}
+                    options={subcategories.map((s) => ({ value: s, label: s }))}
+                  />
+                )}
               />
-              {activeField === 'to' && toContactSuggestions.length > 0 && (
-                <ul
-                  role="listbox"
-                  aria-label="Sugestões de destino"
-                  className="absolute z-10 w-full mt-1 bg-card border border-border rounded-md shadow-lg overflow-hidden"
-                >
-                  {toContactSuggestions.map((suggestion) => (
-                    <li key={suggestion} role="option" aria-selected={false}>
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => handleSuggestionSelect('to', suggestion)}
-                        className="w-full px-3 py-2 text-sm text-left text-foreground hover:bg-muted transition-colors"
-                      >
-                        {suggestion}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
           </div>
 
@@ -427,7 +404,6 @@ export function TransactionModal({
           <div>
             <span className={labelClass}>Imagem (opcional)</span>
 
-            {/* Preview da imagem */}
             {previewSrc ? (
               <div className="relative rounded-lg overflow-hidden border border-border bg-muted/20">
                 <img
