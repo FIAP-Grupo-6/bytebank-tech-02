@@ -51,6 +51,11 @@ export function RecentTransactions({ transactions }: { transactions: Transaction
                     <div>
                       <p className="text-sm font-medium text-foreground">
                         {isCredit ? 'Crédito' : 'Débito'}
+                        {t.from && (
+                          <span className="text-muted-foreground font-normal">
+                            {' · '}{t.from}{t.to && ` › ${t.to}`}
+                          </span>
+                        )}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {format(new Date(t.date), 'dd MMM yyyy', { locale: ptBR })}

@@ -179,10 +179,11 @@ function TransactionRow({
             <p className="text-sm font-medium text-foreground truncate">
               {isCredit ? 'Crédito' : 'Débito'}
               {transaction.from && (
-                <span className="text-muted-foreground font-normal"> · de {transaction.from}</span>
-              )}
-              {transaction.to && (
-                <span className="text-muted-foreground font-normal"> · para {transaction.to}</span>
+                <span className="text-muted-foreground font-normal">
+                  {' · '}
+                  {transaction.from}
+                  {transaction.to && ` › ${transaction.to}`}
+                </span>
               )}
             </p>
             <div className="flex items-center gap-2">
