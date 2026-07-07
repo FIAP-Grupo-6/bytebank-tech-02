@@ -17,6 +17,7 @@ interface TransactionState {
 
 const initialFilters: TransactionFilters = {
   type: 'all',
+  category: '',
   dateFrom: '',
   dateTo: '',
   search: '',

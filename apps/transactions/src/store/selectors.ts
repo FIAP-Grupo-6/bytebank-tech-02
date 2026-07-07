@@ -29,6 +29,8 @@ export const selectFilteredTransactions = createSelector(
       if (filters.dateTo && transactionDate > parseDateEnd(filters.dateTo))
         return false
 
+      if (filters.category && t.from !== filters.category) return false
+
       if (filters.search) {
         const q = filters.search.toLowerCase()
         const matchesType = t.type.toLowerCase().includes(q)

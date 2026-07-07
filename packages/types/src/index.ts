@@ -95,6 +95,7 @@ export interface StatementResponse {
 
 export interface TransactionFilters {
   type?: TransactionType | 'all'
+  category?: string
   dateFrom?: string
   dateTo?: string
   search?: string
