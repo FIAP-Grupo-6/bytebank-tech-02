@@ -277,18 +277,6 @@ npm run lint             # Lint em todos os apps
 
 ---
 
-## Divisão de trabalho sugerida para o grupo
-
-| Pessoa | Responsabilidade                                      |
-|--------|-------------------------------------------------------|
-| 1      | App `transactions` — listagem, filtros, paginação     |
-| 2      | App `transactions` — modal de nova transação, store   |
-| 3      | App `host` — login, cadastro, NextAuth                |
-| 4      | App `host` — dashboard, gráficos, cartões             |
-| Todos  | Docker, deploy Vercel, README, vídeo demonstrativo    |
-
----
-
 ## Design System compartilhado — `@bytebank/ui`
 
 Os microfrontends precisam parecer **um único produto**. Para isso, o design system vive em um pacote próprio consumido por todas as zonas — não duplicado em cada app.
