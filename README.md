@@ -38,6 +38,32 @@ bytebank-fase2/
 
 ---
 
+## Avaliação rápida (sem a API externa)
+
+Para rodar o projeto sem precisar clonar/configurar a API externa (`israelmeinert/tech-challenge-2`), existe um **mock local** com usuário e transações de teste já cadastrados. Um único comando sobe o mock **e** os dois apps:
+
+```bash
+git clone https://github.com/FIAP-Grupo-6/bytebank-tech-02.git
+cd bytebank-tech-02
+npm install
+cp apps/host/.env.example apps/host/.env.local
+cp apps/transactions/.env.example apps/transactions/.env.local
+npm run dev:demo
+```
+
+Acesse **http://localhost:3002** e faça login com:
+
+```
+E-mail: joao@bytebank.com
+Senha:  senha123
+```
+
+O mock (`scripts/mock-api/server.js`) implementa as mesmas rotas da API real (`/user`, `/user/auth`, `/account`, `/account/transaction`), com um usuário, dois cartões e 15 transações já seedados, então dashboard, gráficos, listagem/filtro de transações, cartões e criação/edição/exclusão de transação funcionam normalmente. Os dados ficam em memória — reiniciar o processo reseta para o estado inicial.
+
+Para a versão com a API real (persistência em MongoDB), siga a seção abaixo.
+
+---
+
 ## Rodando localmente (sem Docker)
 
 ### 1. Clone e instale as dependências
@@ -238,11 +264,13 @@ O deploy é feito em **dois projetos separados** na Vercel, um para cada app.
 
 ```bash
 # Raiz do monorepo
+npm run dev:demo         # Sobe o mock da API + todos os apps (avaliação, sem clonar a API real)
 npm run dev:full         # Sobe a API (api/) + todos os apps de uma vez (recomendado p/ dev)
 npm run dev              # Sobe todos os apps em paralelo (API já precisa estar rodando)
 npm run dev:host         # Só o host (porta 3002)
 npm run dev:transactions # Só o transactions (porta 3001)
 npm run dev:api          # Só a API (porta 3000, requer api/ clonada)
+npm run dev:mock         # Só o mock da API (porta 3000, sem dependências externas)
 npm run build            # Build de todos os apps
 npm run lint             # Lint em todos os apps
 ```
