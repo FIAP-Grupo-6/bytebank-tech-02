@@ -14,6 +14,8 @@
     "dev:transactions": "npm run dev --workspace=apps/transactions",
     "dev:api": "npm run dev --prefix api",
     "dev:full": "concurrently -n API,APPS -c blue,green \"npm run dev:api\" \"npm run dev\"",
+    "dev:mock": "node scripts/mock-api/server.js",
+    "dev:demo": "concurrently -n MOCK,APPS -c blue,green \"npm run dev:mock\" \"npm run dev\"",
     "storybook": "npm run storybook --workspace=packages/ui"
   },
   "devDependencies": {
