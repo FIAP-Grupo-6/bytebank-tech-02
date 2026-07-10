@@ -48,14 +48,13 @@ cd bytebank-tech-02
 npm install
 ```
 
-### 2. Clone e suba a API
+### 2. Clone a API
+
+Clone a API **dentro da raiz do monorepo**, na pasta `api/` (mesma pasta usada pelo Docker Compose), para poder subir tudo com um único comando no próximo passo:
 
 ```bash
-# Em outra pasta, fora do monorepo
-git clone https://github.com/israelmeinert/tech-challenge-2.git
-cd tech-challenge-2
-npm install
-npm run dev
+git clone https://github.com/israelmeinert/tech-challenge-2.git api
+cd api && npm install && cd ..
 # API disponível em http://localhost:3000
 ```
 
@@ -84,22 +83,24 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXTAUTH_SECRET=qualquer-string-secreta-aqui
 ```
 
-### 4. Suba os apps
+### 4. Suba tudo
 
-Para subir todos os apps de uma vez (recomendado):
+Para subir a API **e** os dois apps front-end de uma vez, com um único comando:
 
 ```bash
-npm run dev
+npm run dev:full
 ```
 
-Ou individualmente, caso prefira terminais separados:
+Isso usa `concurrently` para rodar a API (`api/`) e os apps do monorepo (`turbo run dev`) no mesmo terminal, com logs identificados por cor.
+
+Se preferir subir só os apps (API já rodando à parte), ou terminais separados:
 
 ```bash
-# Microfrontend de transações (porta 3001)
-npm run dev:transactions
+npm run dev               # host + transactions via turbo
 
-# Host shell (porta 3002)
-npm run dev:host
+npm run dev:transactions  # só o microfrontend de transações (porta 3001)
+npm run dev:host          # só o host (porta 3002)
+npm run dev:api           # só a API (porta 3000, requer api/ clonada)
 ```
 
 Acesse: **http://localhost:3002**
@@ -237,9 +238,11 @@ O deploy é feito em **dois projetos separados** na Vercel, um para cada app.
 
 ```bash
 # Raiz do monorepo
-npm run dev              # Sobe todos os apps em paralelo
+npm run dev:full         # Sobe a API (api/) + todos os apps de uma vez (recomendado p/ dev)
+npm run dev              # Sobe todos os apps em paralelo (API já precisa estar rodando)
 npm run dev:host         # Só o host (porta 3002)
 npm run dev:transactions # Só o transactions (porta 3001)
+npm run dev:api          # Só a API (porta 3000, requer api/ clonada)
 npm run build            # Build de todos os apps
 npm run lint             # Lint em todos os apps
 ```
